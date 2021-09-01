@@ -21,15 +21,19 @@ const (
 	membersEndpoint  = "members"
 )
 
-func (sdk mfSDK) CreateUser(u User) (string, error) {
+func (sdk mfSDK) CreateUser(token string, u User) (string, error) {
 	data, err := json.Marshal(u)
 	if err != nil {
 		return "", err
 	}
 
 	url := createURL(sdk.baseURL, sdk.usersPrefix, usersEndpoint)
+	req, err := http.NewRequest(http.MethodPost, url, bytes.NewReader(data))
+	if err != nil {
+		return "", err
+	}
 
-	resp, err := sdk.client.Post(url, string(CTJSON), bytes.NewReader(data))
+	resp, err := sdk.sendRequest(req, token, string(CTJSON))
 	if err != nil {
 		return "", err
 	}
