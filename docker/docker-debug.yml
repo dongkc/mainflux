@@ -1,0 +1,96 @@
+# Copyright (c) Mainflux
+# SPDX-License-Identifier: Apache-2.0
+
+
+# https://github.com/mrts/docker-postgresql-multiple-databases
+
+version: "3.7"
+
+volumes:
+  mainflux-auth-db-volume:
+  mainflux-users-db-volume:
+  mainflux-things-db-volume:
+  mainflux-auth-redis-volume:
+  mainflux-es-redis-volume:
+  mainflux-mqtt-broker-volume:
+
+services:
+  nginx:
+    image: nginx:1.16.0-alpine
+    container_name: mainflux-nginx
+    restart: on-failure
+    volumes:
+      - ./nginx/nginx-${AUTH-key}.conf:/etc/nginx/nginx.conf.template
+      - ./nginx/entrypoint.sh:/entrypoint.sh
+      - ./nginx/snippets:/etc/nginx/snippets
+      - ./ssl/authorization.js:/etc/nginx/authorization.js
+      - ./ssl/certs/mainflux-server.crt:/etc/ssl/certs/mainflux-server.crt
+      - ./ssl/certs/ca.crt:/etc/ssl/certs/ca.crt
+      - ./ssl/certs/mainflux-server.key:/etc/ssl/private/mainflux-server.key
+      - ./ssl/dhparam.pem:/etc/ssl/certs/dhparam.pem
+    ports:
+      - ${MF_NGINX_HTTP_PORT}:${MF_NGINX_HTTP_PORT}
+      - ${MF_NGINX_SSL_PORT}:${MF_NGINX_SSL_PORT}
+      - ${MF_NGINX_MQTT_PORT}:${MF_NGINX_MQTT_PORT}
+      - ${MF_NGINX_MQTTS_PORT}:${MF_NGINX_MQTTS_PORT}
+    network_mode: host
+    env_file:
+      - .env
+    command: /entrypoint.sh
+    depends_on:
+      - things
+      - users
+      - mqtt-adapter
+      - http-adapter
+
+  auth-db:
+    image: postgres:10.8-alpine
+    container_name: mainflux-auth-db
+    restart: on-failure
+    network_mode: host
+    environment:
+      POSTGRES_USER: ${MF_AUTH_DB_USER}
+      POSTGRES_PASSWORD: ${MF_AUTH_DB_PASS}
+      POSTGRES_DB: ${MF_USERS_DB}
+    volumes:
+      - mainflux-auth-db-volume:/var/lib/postgresql/data
+    command: -p ${MF_AUTH_DB_PORT}
+
+  users-db:
+    image: postgres:10.8-alpine
+    container_name: mainflux-users-db
+    restart: on-failure
+    network_mode: host
+    environment:
+      POSTGRES_USER: ${MF_USERS_DB_USER}
+      POSTGRES_PASSWORD: ${MF_USERS_DB_PASS}
+      POSTGRES_DB: ${MF_USERS_DB}
+    volumes:
+      - mainflux-users-db-volume:/var/lib/postgresql/data
+    command: -p ${MF_USERS_DB_PORT}
+
+  things-db:
+    image: postgres:10.8-alpine
+    container_name: mainflux-things-db
+    restart: on-failure
+    network_mode: host
+    environment:
+      POSTGRES_USER: ${MF_THINGS_DB_USER}
+      POSTGRES_PASSWORD: ${MF_THINGS_DB_PASS}
+      POSTGRES_DB: ${MF_THINGS_DB}
+    volumes:
+      - mainflux-things-db-volume:/var/lib/postgresql/data
+    command: -p ${MF_THINGS_DB_PORT}
+
+  auth-redis:
+    image: redis:5.0-alpine
+    container_name: mainflux-auth-redis
+    restart: on-failure
+    network_mode: host
+    volumes:
+      - mainflux-auth-redis-volume:/data
+
+  jaeger:
+    image: jaegertracing/all-in-one:1.13
+    container_name: mainflux-jaeger
+    network_mode: host
