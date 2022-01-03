@@ -1,0 +1,39 @@
+syntax = "proto2";
+
+// 命令类型
+enum CmdType{
+    CMD_GET_1       = 1;
+    CMD_SET_1       = 2;
+    CMD_GET_REPLY_1 = 3;
+    CMD_SET_REPLY_1 = 4;
+    CMD_DATA        = 5;
+    CMD_SLEEP       = 6;
+}
+
+// 参数
+message Param {
+  optional uint32 collectPeriod   = 1;
+  optional uint32 tranmitPeriod   = 2;
+  optional string firmwareVersion = 3;
+  optional string hardwareVersion = 4;
+}
+
+// 通用数据上报消息类型,
+message Data {
+  required string id        = 1 [(nanopb).max_length = 19];
+  required CmdType cmd      = 2;
+  required uint32 timestamp = 3;
+  repeated uint32 YuLiang   = 4;
+  repeated uint32 ChenJiang = 5;
+  repeated uint32 ShuiWei   = 6;
+  repeated uint32 NiShui    = 7;
+  repeated float  CeXie     = 8;
+  optional Param  params    = 9;
+}
+
+message Cmd {
+  required string id        = 1 [(nanopb).max_length = 19];
+  required CmdType cmd      = 2;
+  required uint32 timestamp = 3;
+  optional Param params     = 4;
+}
