@@ -27,8 +27,14 @@ message Data {
   repeated uint32 ChenJiang = 5;
   repeated uint32 ShuiWei   = 6;
   repeated uint32 NiShui    = 7;
-  repeated float  CeXie     = 8;
+  repeated Axis   CeXie     = 8;
   optional Param  params    = 9;
+}
+
+message Axis {
+  required x = 1;
+  required y = 2;
+  required z = 3;
 }
 
 message Cmd {
