@@ -69,12 +69,12 @@ g -> m : 连接mqtt服务器
 g -> m : 订阅"/ISD2180/{id}/cmd"主题
 g -> m : ISD2180将消息Data发布到"/ISD2180/data"
 m -> a : 云平台接收到消息Data
-m <- a : 云平台下发确认消息/ISD2180/{id}/cmd
+m <- a : 云平台下发消息/ISD2180/{id}/cmd
 g <- m : ISD2180接收Reply消息
-m <- a : 云平台下发确认消息/ISD2180/{id}/cmd
+m <- a : 云平台下发消息/ISD2180/{id}/cmd
 g <- m : ISD2180接收Cmd消息
 g -> m : ISD2180将消息Data发布到"/ISD2180/data"
-m -> a : 云平台接收到消息Reply
+m -> a : 云平台接收到消息
 #+END_SRC
 
 #+results:
