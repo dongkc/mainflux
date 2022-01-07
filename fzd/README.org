@@ -17,12 +17,13 @@
 #+LATEX_HEADER: \renewcommand{\footrulewidth}{0.4pt}
 #+LATEX_HEADER: \pagestyle{fancy}
 #+LATEX_HEADER: \usepackage[tocentry, nochapter, owncaptions, tablegrid]{vhistory}
-#+EXPORT_FILE_NAME: ISD2180_protocol_1.01.pdf
+#+EXPORT_FILE_NAME: ISD2180_protocol_1.02.pdf
 #+OPTIONS: toc:nil
 
 #+BEGIN_versionhistory
   \vhEntry{1.0}{3/01/2022}{dongkechang}{1.新创建}
   \vhEntry{1.01}{7/01/2022}{dongkechang}{1.添加订阅发布主题}
+  \vhEntry{1.02}{7/01/2022}{dongkechang}{1.添加float类型到Axis}
 #+END_versionhistory
 
 @@latex:\clearpage@@
@@ -117,9 +118,9 @@ message Data {
 }
 
 message Axis {
-  required x = 1;
-  required y = 2;
-  required z = 3;
+  required float x = 1;
+  required float y = 2;
+  required float z = 3;
 }
 
 message Cmd {
